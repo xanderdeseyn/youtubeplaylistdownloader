@@ -1,4 +1,4 @@
-apt-get install ffmpeg
+apt-get install ffmpeg python-setuptools python-pip curl
 rm -r /opt/mp3utils
 rm -r /usr/local/bin/youtube-dl
 curl https://yt-dl.org/latest/youtube-dl -o /usr/local/bin/youtube-dl
