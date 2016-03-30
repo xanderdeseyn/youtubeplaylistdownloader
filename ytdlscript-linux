@@ -1,0 +1,9 @@
+apt-get install ffmpeg python-setuptools python-pip curl
+rm -r /opt/mp3utils
+rm -r /usr/local/bin/youtube-dl
+curl https://yt-dl.org/latest/youtube-dl -o /usr/local/bin/youtube-dl
+chmod a+rx /usr/local/bin/youtube-dl
+git clone https://github.com/N1ghtly/Mp3Utils.git /opt/mp3utils
+pip install --allow-unverified eyeD3 --allow-external eyeD3 eyeD3
+echo '/usr/local/bin/youtube-dl $1 --playlist-start $2 --playlist-end $3 -o "%(title)s.%(ext)s" -x --audio-format mp3 --prefer-ffmpeg -i\npython /opt/mp3utils/tagger.py .' | sudo tee /usr/local/bin/downloadplaylist > /dev/null
+chmod 777 /usr/local/bin/downloadplaylist
