@@ -1,0 +1,57 @@
+#!/bin/bash
+
+if [ "$(whoami)" != "root" ]; then
+	echo "Root is required to use this script. Try running with sudo."
+	exit 1
+fi
+
+echo "Installing ffmpeg, pip and curl (if needed)"
+brew install ffmpeg &> /dev/null
+brew install python-pip &> /dev/null
+
+echo "Installing python setup tools (if needed)"
+sudo curl https://bootstrap.pypa.io/ez_setup.py -o &> /dev/null - | sudo python
+if [ "$?" -ne 0 ]; then
+    echo "Installing python setup tools failed.";
+    exit 1;
+fi
+rm -r /opt/mp3utils
+if [ "$?" -ne 0 ]; then
+    echo "Removing mp3utils failed.";
+    exit 1;
+fi
+rm -r /usr/local/bin/youtube-dl
+if [ "$?" -ne 0 ]; then
+    echo "Removing youtube-dl failed.";
+    exit 1;
+fi
+echo "Installing youtube-dl"
+curl https://yt-dl.org/latest/youtube-dl -o /usr/local/bin/youtube-dl &> /dev/null
+if [ "$?" -ne 0 ]; then
+    echo "Installing youtube-dl failed.";
+    exit 1;
+fi
+chmod a+rx /usr/local/bin/youtube-dl
+if [ "$?" -ne 0 ]; then
+    echo "Chmodding youtube-dl failed.";
+    exit 1;
+fi
+echo "Installing Xander Deseyn's mp3utils"
+git clone https://github.com/N1ghtly/Mp3Utils.git /opt/mp3utils &> /dev/null
+if [ "$?" -ne 0 ]; then
+    echo "Installing Xander Deseyn's mp3utils failed";
+    exit 1;
+fi
+echo "Installing eyeD3 for tagging"
+pip install --allow-unverified eyeD3 --allow-external eyeD3 eyeD3 &> /dev/null
+if [ "$?" -ne 0 ]; then
+    echo "Installing eyed3 failed.";
+    exit 1;
+fi
+echo 'youtube-dl $1 --playlist-start $2 --playlist-end $3 -o "%(title)s.%(ext)s" -x --audio-format mp3 --prefer-ffmpeg -i && python /opt/mp3utils/tagger.py .' | sudo tee /usr/local/bin/downloadplaylist > /dev/null
+chmod 777 /usr/local/bin/downloadplaylist
+if [ "$?" -ne 0 ]; then
+    echo "Installing and setting up playlist command failed";
+    exit 1;
+fi
+echo "Succes! Try running downloadplaylist [url] [start] [end]"
